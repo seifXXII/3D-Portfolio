@@ -1,22 +1,23 @@
 import React from 'react'
-import Hero from './sections/Hero'
-import ShowCaseSection from './sections/ShowCaseSection'
-import NavBar from './components/NavBar'
-import LogoShowcase from './sections/LogoShowCase'
-import FeatureCards from './sections/FeatureCards'
-import Contact from './sections/Contact'
-import Footer from './sections/Footer'
+import Hero from './sections/Hero.jsx'
+import ShowCaseSection from './sections/ShowCaseSection.jsx'
+import NavBar from './components/NavBar.jsx'
+import LogoShowcase from './sections/LogoShowCase.jsx'
+import FeatureCards from './sections/FeatureCards.jsx'
+import Contact from './sections/Contact.jsx'
+import Footer from './sections/Footer.jsx'
+import "./index.css";
 
-const App = () => {
+function App() {
   return (
     <>
-    <NavBar />
-    <Hero />
-    <ShowCaseSection />
-    <LogoShowcase />
-    <FeatureCards />
-    <Contact />
-    <Footer />
+      <NavBar />
+      <Hero />
+      <ShowCaseSection />
+      <LogoShowcase />
+      <FeatureCards />
+      <Contact />
+      <Footer />
     </>
   )
 }
