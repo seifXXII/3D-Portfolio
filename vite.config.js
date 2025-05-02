@@ -5,6 +5,11 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/portfolio/",
+  base: "/3D-Portfolio",
   plugins: [tailwindcss(), react()],
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  },
 });
