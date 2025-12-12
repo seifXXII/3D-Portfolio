@@ -29,6 +29,9 @@ importers:
       gsap:
         specifier: ^3.13.0
         version: 3.14.1
+      postprocessing:
+        specifier: ^6.38.0
+        version: 6.38.0(three@0.176.0)
       react:
         specifier: ^19.0.0
         version: 19.2.3
