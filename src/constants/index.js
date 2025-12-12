@@ -129,7 +129,7 @@ const projects = [
     description:
       "Interactive Apple iPhone 15 Pro product showcase featuring real-time 3D rendering using Three.js and React Three Fiber. Implemented sophisticated scroll-triggered animations with GSAP, responsive design with Tailwind CSS 4, and production monitoring with Sentry.",
     imagePath: "/images/project1.png",
-    liveUrl: "https://apple-iphone15pro-li91.vercel.app/",
+    liveUrl: "https://apple-iphone15pro-psi.vercel.app/",
     githubUrl: null,
     featured: false,
     techStack: [
