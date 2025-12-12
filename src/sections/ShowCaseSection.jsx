@@ -2,14 +2,15 @@ import { useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import TechStackCarousel from "../components/TechStackCarousel.jsx";
+import { projects } from "../constants/index.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const AppShowcase = () => {
+const ShowCaseSection = () => {
   const sectionRef = useRef(null);
-  const rydeRef = useRef(null);
-  const libraryRef = useRef(null);
-  const ycDirectoryRef = useRef(null);
+  const featuredRef = useRef(null);
+  const secondaryRef = useRef([]);
 
   useGSAP(() => {
     // Animation for the main section
@@ -19,69 +20,282 @@ const AppShowcase = () => {
       { opacity: 1, duration: 1.5 }
     );
 
-    // Animations for each app showcase
-    const cards = [rydeRef.current, libraryRef.current, ycDirectoryRef.current];
-
-    cards.forEach((card, index) => {
+    // Animation for featured project
+    if (featuredRef.current) {
       gsap.fromTo(
-        card,
-        {
-          y: 50,
-          opacity: 0,
-        },
+        featuredRef.current,
+        { y: 50, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 1,
-          delay: 0.3 * (index + 1),
+          delay: 0.3,
           scrollTrigger: {
-            trigger: card,
+            trigger: featuredRef.current,
             start: "top bottom-=100",
           },
         }
       );
+    }
+
+    // Animations for secondary projects
+    secondaryRef.current.forEach((card, index) => {
+      if (card) {
+        gsap.fromTo(
+          card,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            delay: 0.2 * (index + 1),
+            scrollTrigger: {
+              trigger: card,
+              start: "top bottom-=100",
+            },
+          }
+        );
+      }
     });
   }, []);
 
+  // Separate featured and secondary projects
+  const featuredProject = projects.find((p) => p.featured);
+  const secondaryProjects = projects.filter((p) => !p.featured);
+
   return (
-    <div id="work" ref={sectionRef} className="app-showcase">
+    <div
+      id="work"
+      ref={sectionRef}
+      className="w-full mt-20 px-5 md:px-20 py-10 md:py-20"
+    >
       <div className="w-full">
-        <div className="showcaselayout">
-          <div ref={rydeRef} className="first-project-wrapper">
-            <div className="image-wrapper">
-              <img src="/images/project1.png" alt="Ryde App Interface" />
+        {/* Featured Project - Full Width */}
+        {featuredProject && (
+          <div ref={featuredRef} className="w-full mb-10 md:mb-16">
+            <div className="group overflow-hidden rounded-xl xl:h-[70vh] md:h-[50vh] h-96 relative mb-6">
+              <img
+                src={featuredProject.imagePath}
+                alt={featuredProject.title}
+                className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
-            <div className="text-content">
-              <h2>Immersive 3D Product Showcase of the iPhone 15 Pro</h2>
+            <div className="space-y-5">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-0">
+                  {featuredProject.title}
+                </h2>
+                {featuredProject.role && (
+                  <span className="hero-badge">{featuredProject.role}</span>
+                )}
+              </div>
+              {featuredProject.subtitle && (
+                <h3 className="text-xl md:text-2xl text-white-50">
+                  {featuredProject.subtitle}
+                </h3>
+              )}
+              {featuredProject.scale && (
+                <p className="text-white-50 md:text-lg">
+                  <span className="font-semibold text-white">Scale:</span>{" "}
+                  {featuredProject.scale}
+                </p>
+              )}
               <p className="text-white-50 md:text-xl">
-                A landing page builtbuilt with React, Three.js, and GSAP for a
-                stunning, interactive experience.
+                {featuredProject.description}
               </p>
+
+              {/* Tech Stack Carousel */}
+              {featuredProject.techStack &&
+                featuredProject.techStack.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-white font-semibold mb-4 text-lg">
+                      Tech Stack
+                    </h4>
+                    <TechStackCarousel techStack={featuredProject.techStack} />
+                  </div>
+                )}
+
+              {/* Highlights */}
+              {featuredProject.highlights &&
+                featuredProject.highlights.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-white font-semibold mb-3 text-lg">
+                      Key Achievements
+                    </h4>
+                    <ul className="space-y-2">
+                      {featuredProject.highlights.map((highlight, index) => (
+                        <li
+                          key={index}
+                          className="text-white-50 flex items-start gap-2"
+                        >
+                          <span className="text-blue-50">✓</span>
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap gap-4 mt-6">
+                {featuredProject.liveUrl && (
+                  <a
+                    href={featuredProject.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-semibold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:scale-105 hover:shadow-lg"
+                  >
+                    <span className="relative z-10">View Project</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="size-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                      />
+                    </svg>
+                  </a>
+                )}
+                {featuredProject.githubUrl && (
+                  <a
+                    href={featuredProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-black-200 text-white border border-white-50 font-semibold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:text-black hover:scale-105 hover:shadow-lg"
+                  >
+                    <span className="relative z-10">View Code</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="size-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"
+                      />
+                    </svg>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="project-list-wrapper overflow-hidden">
-            <div className="project" ref={libraryRef}>
-              <div className="image-wrapper bg-[#FFEFDB]">
+        {/* Secondary Projects - 2 Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {secondaryProjects.slice(0, 2).map((project, index) => (
+            <div
+              key={project.id}
+              className="project-card"
+              ref={(el) => (secondaryRef.current[index] = el)}
+            >
+              <div
+                className={`${
+                  project.id === 3
+                    ? "bg-[#FFEFDB]"
+                    : project.id === 4
+                    ? "bg-[#FFE7EB]"
+                    : ""
+                } group overflow-hidden rounded-xl xl:h-[40vh] md:h-52 lg:h-72 h-64 relative mb-4 xl:px-5 2xl:px-12 py-0`}
+              >
                 <img
-                  src="/images/project2.png"
-                  alt="Library Management Platform"
+                  src={project.imagePath}
+                  alt={project.title}
+                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <h2>Business Management Platform</h2>
-            </div>
+              <div>
+                <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-2">
+                  {project.title}
+                </h2>
+                {project.subtitle && (
+                  <p className="text-white-50 mb-3">{project.subtitle}</p>
+                )}
+                <p className="text-white-50 text-sm md:text-base mb-4">
+                  {project.description}
+                </p>
 
-            <div className="project" ref={ycDirectoryRef}>
-              <div className="image-wrapper bg-[#FFE7EB]">
-                <img src="/images/project3.png" alt="YC Directory App" />
+                {/* Tech Stack Carousel */}
+                {project.techStack && project.techStack.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-white font-semibold mb-2 text-sm">
+                      Tech Stack
+                    </h4>
+                    <TechStackCarousel
+                      techStack={project.techStack}
+                      autoPlayInterval={4000}
+                    />
+                  </div>
+                )}
+
+                {/* CTA Buttons */}
+                <div className="flex flex-wrap gap-3 mt-5">
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:scale-105 hover:shadow-lg"
+                    >
+                      <span className="relative z-10">Live Demo</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="size-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                        />
+                      </svg>
+                    </a>
+                  )}
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 bg-black-200 text-white border border-white-50 font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:text-black hover:scale-105 hover:shadow-lg"
+                    >
+                      <span className="relative z-10">View Code</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="size-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"
+                        />
+                      </svg>
+                    </a>
+                  )}
+                </div>
               </div>
-              <h2>E-commerce Application</h2>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default AppShowcase;
+export default ShowCaseSection;
