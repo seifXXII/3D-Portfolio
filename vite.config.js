@@ -3,9 +3,8 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
-  // Use root path for dev, GitHub Pages path for production
-  base: command === "serve" ? "/" : "/3D-Portfolio/",
+export default defineConfig(() => ({
+  base: "./",
   plugins: [tailwindcss(), react()],
 
   // Asset handling optimizations
