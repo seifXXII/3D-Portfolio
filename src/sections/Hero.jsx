@@ -63,7 +63,7 @@ const Hero = () => {
         </header>
 
         <figure>
-          <div className="hero-3d-layout">
+          <div className="hero-3d-layout" style={{ touchAction: "pan-y" }}>
             <HeroExperience />
           </div>
         </figure>

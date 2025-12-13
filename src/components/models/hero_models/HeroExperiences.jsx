@@ -20,15 +20,18 @@ const HeroExperience = () => {
       {/* deep blue ambient */}
       <ambientLight intensity={0.2} color="#1a1a40" />
 
-      {/* Configure OrbitControls - now enabled on mobile too! */}
+      {/* Configure OrbitControls - hybrid approach for mobile */}
       <OrbitControls
+        makeDefault={false} // Don't override default touch behaviors
         enablePan={false} // Prevents panning of the scene
-        enableZoom={true} // Enable zoom on all devices
-        enableRotate={true} // Enable rotation on all devices - allows mobile interaction
+        enableZoom={isMobile ? false : true} // Disable zoom on mobile to avoid conflicts
+        enableRotate={true} // Enable rotation on all devices
         maxDistance={20} // Maximum distance for zooming out
         minDistance={5} // Minimum distance for zooming in
         minPolarAngle={Math.PI / 5} // Minimum angle for vertical rotation
         maxPolarAngle={Math.PI / 2} // Maximum angle for vertical rotation
+        // On mobile: horizontal drag rotates, vertical drag scrolls
+        rotateSpeed={isMobile ? 0.5 : 1} // Slower rotation on mobile
       />
 
       <Suspense fallback={null}>
