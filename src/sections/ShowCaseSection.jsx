@@ -127,7 +127,7 @@ const ShowCaseSection = () => {
       <div className="w-full">
         {/* Featured Project - Full Width */}
         {featuredProject && (
-          <div ref={featuredRef} className="w-full mb-10 md:mb-16">
+          <div ref={featuredRef} className="w-full mb-10 md:mb-16 p-2">
             <ProjectImage
               src={featuredProject.imagePath}
               alt={featuredProject.title}
@@ -255,7 +255,7 @@ const ShowCaseSection = () => {
           {secondaryProjects.slice(0, 2).map((project, index) => (
             <article
               key={project.id}
-              className="project-card"
+              className="project-card p-2"
               ref={(el) => (secondaryRef.current[index] = el)}
             >
               <ProjectImage
