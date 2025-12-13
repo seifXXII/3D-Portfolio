@@ -34,7 +34,7 @@ const NavBar = () => {
           className="logo"
           onClick={(e) => handleNavClick(e, "#hero")}
         >
-          Seif <span className="text-blue-50">.</span>
+          Seif El-Den
         </a>
 
         <nav className="desktop" aria-label="Desktop navigation">

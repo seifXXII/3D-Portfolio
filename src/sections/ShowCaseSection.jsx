@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -7,15 +7,60 @@ import { projects } from "../constants/index.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Loading skeleton for project cards
-const ProjectCardSkeleton = () => (
-  <div className="animate-pulse">
-    <div className="bg-black-200 rounded-xl h-96 mb-6"></div>
-    <div className="h-8 bg-black-200 rounded mb-4 w-3/4"></div>
-    <div className="h-4 bg-black-200 rounded mb-2"></div>
-    <div className="h-4 bg-black-200 rounded mb-2 w-5/6"></div>
-  </div>
-);
+// Image component with error handling
+const ProjectImage = ({
+  src,
+  alt,
+  className,
+  containerClassName,
+  priority = false,
+}) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const handleLoad = () => setLoading(false);
+  const handleError = () => {
+    setLoading(false);
+    setError(true);
+  };
+
+  return (
+    <div className={`${containerClassName} ${loading ? "image-loading" : ""}`}>
+      {error ? (
+        <div className="image-error w-full h-full rounded-xl">
+          <div className="text-center">
+            <svg
+              className="mx-auto h-12 w-12 text-white-50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <p className="mt-2 text-sm">Image unavailable</p>
+          </div>
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          loading={priority ? "eager" : "lazy"}
+          onLoad={handleLoad}
+          onError={handleError}
+          className={`${className} transition-opacity duration-500 ${
+            loading ? "opacity-0" : "opacity-100"
+          }`}
+        />
+      )}
+    </div>
+  );
+};
 
 const ShowCaseSection = () => {
   const sectionRef = useRef(null);
@@ -83,23 +128,13 @@ const ShowCaseSection = () => {
         {/* Featured Project - Full Width */}
         {featuredProject && (
           <div ref={featuredRef} className="w-full mb-10 md:mb-16">
-            <div className="group overflow-hidden rounded-xl xl:h-[70vh] md:h-[50vh] h-96 relative mb-6">
-              <picture>
-                <source
-                  srcSet={featuredProject.imagePath.replace(
-                    /\.(png|jpg|jpeg)$/,
-                    ".webp"
-                  )}
-                  type="image/webp"
-                />
-                <img
-                  src={featuredProject.imagePath}
-                  alt={featuredProject.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                />
-              </picture>
-            </div>
+            <ProjectImage
+              src={featuredProject.imagePath}
+              alt={featuredProject.title}
+              priority={true}
+              containerClassName="group overflow-hidden rounded-xl xl:h-[70vh] md:h-[50vh] h-96 relative mb-6"
+              className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+            />
             <div className="space-y-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-0">
@@ -223,31 +258,19 @@ const ShowCaseSection = () => {
               className="project-card"
               ref={(el) => (secondaryRef.current[index] = el)}
             >
-              <div
-                className={`${
+              <ProjectImage
+                src={project.imagePath}
+                alt={project.title}
+                priority={false}
+                containerClassName={`${
                   project.id === 3
                     ? "bg-[#FFEFDB]"
                     : project.id === 4
                     ? "bg-[#FFE7EB]"
                     : ""
                 } group overflow-hidden rounded-xl xl:h-[40vh] md:h-52 lg:h-72 h-64 relative mb-4 xl:px-5 2xl:px-12 py-0`}
-              >
-                <picture>
-                  <source
-                    srcSet={project.imagePath.replace(
-                      /\.(png|jpg|jpeg)$/,
-                      ".webp"
-                    )}
-                    type="image/webp"
-                  />
-                  <img
-                    src={project.imagePath}
-                    alt={project.title}
-                    loading="lazy"
-                    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                  />
-                </picture>
-              </div>
+                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              />
               <div>
                 <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-2">
                   {project.title}
