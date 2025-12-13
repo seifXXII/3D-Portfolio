@@ -7,6 +7,16 @@ import { projects } from "../constants/index.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Loading skeleton for project cards
+const ProjectCardSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="bg-black-200 rounded-xl h-96 mb-6"></div>
+    <div className="h-8 bg-black-200 rounded mb-4 w-3/4"></div>
+    <div className="h-4 bg-black-200 rounded mb-2"></div>
+    <div className="h-4 bg-black-200 rounded mb-2 w-5/6"></div>
+  </div>
+);
+
 const ShowCaseSection = () => {
   const sectionRef = useRef(null);
   const featuredRef = useRef(null);
@@ -74,11 +84,21 @@ const ShowCaseSection = () => {
         {featuredProject && (
           <div ref={featuredRef} className="w-full mb-10 md:mb-16">
             <div className="group overflow-hidden rounded-xl xl:h-[70vh] md:h-[50vh] h-96 relative mb-6">
-              <img
-                src={featuredProject.imagePath}
-                alt={featuredProject.title}
-                className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-              />
+              <picture>
+                <source
+                  srcSet={featuredProject.imagePath.replace(
+                    /\.(png|jpg|jpeg)$/,
+                    ".webp"
+                  )}
+                  type="image/webp"
+                />
+                <img
+                  src={featuredProject.imagePath}
+                  alt={featuredProject.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                />
+              </picture>
             </div>
             <div className="space-y-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
@@ -143,6 +163,7 @@ const ShowCaseSection = () => {
                     href={featuredProject.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`View ${featuredProject.title} project`}
                     className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-semibold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:scale-105 hover:shadow-lg"
                   >
                     <span className="relative z-10">View Project</span>
@@ -153,6 +174,7 @@ const ShowCaseSection = () => {
                       strokeWidth={2}
                       stroke="currentColor"
                       className="size-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -167,6 +189,7 @@ const ShowCaseSection = () => {
                     href={featuredProject.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`View source code for ${featuredProject.title}`}
                     className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-black-200 text-white border border-white-50 font-semibold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:text-black hover:scale-105 hover:shadow-lg"
                   >
                     <span className="relative z-10">View Code</span>
@@ -177,6 +200,7 @@ const ShowCaseSection = () => {
                       strokeWidth={2}
                       stroke="currentColor"
                       className="size-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -194,7 +218,7 @@ const ShowCaseSection = () => {
         {/* Secondary Projects - 2 Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {secondaryProjects.slice(0, 2).map((project, index) => (
-            <div
+            <article
               key={project.id}
               className="project-card"
               ref={(el) => (secondaryRef.current[index] = el)}
@@ -208,11 +232,21 @@ const ShowCaseSection = () => {
                     : ""
                 } group overflow-hidden rounded-xl xl:h-[40vh] md:h-52 lg:h-72 h-64 relative mb-4 xl:px-5 2xl:px-12 py-0`}
               >
-                <img
-                  src={project.imagePath}
-                  alt={project.title}
-                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                />
+                <picture>
+                  <source
+                    srcSet={project.imagePath.replace(
+                      /\.(png|jpg|jpeg)$/,
+                      ".webp"
+                    )}
+                    type="image/webp"
+                  />
+                  <img
+                    src={project.imagePath}
+                    alt={project.title}
+                    loading="lazy"
+                    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  />
+                </picture>
               </div>
               <div>
                 <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-2">
@@ -245,6 +279,7 @@ const ShowCaseSection = () => {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`View ${project.title} live demo`}
                       className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:scale-105 hover:shadow-lg"
                     >
                       <span className="relative z-10">Live Demo</span>
@@ -255,6 +290,7 @@ const ShowCaseSection = () => {
                         strokeWidth={2}
                         stroke="currentColor"
                         className="size-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -269,6 +305,7 @@ const ShowCaseSection = () => {
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`View source code for ${project.title}`}
                       className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 bg-black-200 text-white border border-white-50 font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:text-black hover:scale-105 hover:shadow-lg"
                     >
                       <span className="relative z-10">View Code</span>
@@ -279,6 +316,7 @@ const ShowCaseSection = () => {
                         strokeWidth={2}
                         stroke="currentColor"
                         className="size-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -290,7 +328,7 @@ const ShowCaseSection = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>

@@ -37,6 +37,19 @@ section {
   .flex-col-center {
     @apply flex flex-col justify-center items-center;
   }
+
+  /* Screen reader only - for accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
 }
 
 @layer components {
@@ -103,6 +116,14 @@ section {
 
   .hero-3d-layout {
     @apply xl:w-[70%] w-full h-full min-h-[50vh] absolute xl:-top-20 top-24 xl:-right-20 right-0;
+
+    /* Allow vertical scrolling on mobile devices */
+    touch-action: pan-y;
+
+    /* Re-enable full interaction on desktop */
+    @media (min-width: 769px) {
+      touch-action: auto;
+    }
   }
 
   .navbar {
