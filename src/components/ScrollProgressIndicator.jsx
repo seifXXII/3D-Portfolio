@@ -6,15 +6,26 @@ const ScrollProgressIndicator = () => {
   useEffect(() => {
     const updateScrollProgress = () => {
       const scrollPx = document.documentElement.scrollTop;
-      const winHeightPx =
+      const winHeightPx = Math.max(
+        1,
         document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
+          document.documentElement.clientHeight
+      );
+
+      // Calculate scroll percentage
       const scrolled = (scrollPx / winHeightPx) * 100;
 
-      setScrollProgress(scrolled);
+      // Clamp value to [0, 100] to prevent NaN/Infinity
+      const clampedProgress = Math.min(100, Math.max(0, scrolled));
+
+      setScrollProgress(clampedProgress);
     };
 
-    window.addEventListener("scroll", updateScrollProgress);
+    // Initialize scroll progress on mount
+    updateScrollProgress();
+
+    // Add scroll listener with passive option for better performance
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
 
     return () => window.removeEventListener("scroll", updateScrollProgress);
   }, []);

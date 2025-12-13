@@ -11,8 +11,8 @@ gsap.registerPlugin(ScrollTrigger);
 const ProjectImage = ({
   src,
   alt,
-  className,
-  containerClassName,
+  className = "",
+  containerClassName = "",
   priority = false,
 }) => {
   const [loading, setLoading] = useState(true);

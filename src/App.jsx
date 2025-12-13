@@ -29,7 +29,7 @@ function App() {
       <SkipNavigation />
       <ScrollProgressIndicator />
       <NavBar />
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <Suspense fallback={<LoadingFallback />}>
           <Hero />
         </Suspense>

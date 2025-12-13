@@ -1,18 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { navLinks } from "../constants/index.js";
 
 const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
+  useEffect(() => {
+    // Early return if not in browser environment
+    if (typeof window === "undefined") return;
+
+    // Named handler function to ensure same reference for add/remove
+    const handleScroll = () => {
       if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
-    });
-  }
+    };
+
+    // Add scroll listener
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup: remove listener on unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []); // Empty dependency array - run once on mount
 
   const handleNavClick = (e, link) => {
     e.preventDefault();
