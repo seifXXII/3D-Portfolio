@@ -1,6 +1,11 @@
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Environment } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useMediaQuery } from "react-responsive";
+import {
+  EffectComposer,
+  Bloom,
+  DepthOfField,
+} from "@react-three/postprocessing";
 
 import { Room } from "./Room";
 import HeroLights from "./HeroLights";
@@ -9,23 +14,30 @@ import { Suspense } from "react";
 
 const HeroExperience = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
-  const isTablet = useMediaQuery({ query: "(max-width: 1024px)" });
 
   return (
     <Canvas camera={{ position: [0, 0, 15], fov: 45 }}>
       {/* deep blue ambient */}
       <ambientLight intensity={0.2} color="#1a1a40" />
-      {/* Configure OrbitControls to disable panning and control zoom based on device type */}
+
+      {/* Configure OrbitControls - hybrid approach for mobile */}
       <OrbitControls
+        makeDefault={false} // Don't override default touch behaviors
         enablePan={false} // Prevents panning of the scene
-        enableZoom={!isTablet} // Disables zoom on tablets
+        enableZoom={isMobile ? false : true} // Disable zoom on mobile to avoid conflicts
+        enableRotate={true} // Enable rotation on all devices
         maxDistance={20} // Maximum distance for zooming out
         minDistance={5} // Minimum distance for zooming in
         minPolarAngle={Math.PI / 5} // Minimum angle for vertical rotation
         maxPolarAngle={Math.PI / 2} // Maximum angle for vertical rotation
+        // On mobile: horizontal drag rotates, vertical drag scrolls
+        rotateSpeed={isMobile ? 0.5 : 1} // Slower rotation on mobile
       />
 
       <Suspense fallback={null}>
+        {/* Add environment for better lighting on desktop */}
+        {!isMobile && <Environment preset="city" />}
+
         <HeroLights />
         <Particles count={50} />
         <group
@@ -36,6 +48,18 @@ const HeroExperience = () => {
           <Room />
         </group>
       </Suspense>
+
+      {/* Add post-processing effects only on desktop for performance */}
+      {!isMobile && (
+        <EffectComposer>
+          <Bloom
+            intensity={0.3}
+            luminanceThreshold={0.9}
+            luminanceSmoothing={0.9}
+          />
+          <DepthOfField focusDistance={0.01} focalLength={0.2} bokehScale={3} />
+        </EffectComposer>
+      )}
     </Canvas>
   );
 };

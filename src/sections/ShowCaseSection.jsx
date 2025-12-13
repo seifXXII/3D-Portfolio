@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -6,6 +6,61 @@ import TechStackCarousel from "../components/TechStackCarousel.jsx";
 import { projects } from "../constants/index.js";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Image component with error handling
+const ProjectImage = ({
+  src,
+  alt,
+  className = "",
+  containerClassName = "",
+  priority = false,
+}) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const handleLoad = () => setLoading(false);
+  const handleError = () => {
+    setLoading(false);
+    setError(true);
+  };
+
+  return (
+    <div className={`${containerClassName} ${loading ? "image-loading" : ""}`}>
+      {error ? (
+        <div className="image-error w-full h-full rounded-xl">
+          <div className="text-center">
+            <svg
+              className="mx-auto h-12 w-12 text-white-50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <p className="mt-2 text-sm">Image unavailable</p>
+          </div>
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          loading={priority ? "eager" : "lazy"}
+          onLoad={handleLoad}
+          onError={handleError}
+          className={`${className} transition-opacity duration-500 ${
+            loading ? "opacity-0" : "opacity-100"
+          }`}
+        />
+      )}
+    </div>
+  );
+};
 
 const ShowCaseSection = () => {
   const sectionRef = useRef(null);
@@ -72,14 +127,14 @@ const ShowCaseSection = () => {
       <div className="w-full">
         {/* Featured Project - Full Width */}
         {featuredProject && (
-          <div ref={featuredRef} className="w-full mb-10 md:mb-16">
-            <div className="group overflow-hidden rounded-xl xl:h-[70vh] md:h-[50vh] h-96 relative mb-6">
-              <img
-                src={featuredProject.imagePath}
-                alt={featuredProject.title}
-                className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
+          <div ref={featuredRef} className="w-full mb-10 md:mb-16 p-2">
+            <ProjectImage
+              src={featuredProject.imagePath}
+              alt={featuredProject.title}
+              priority={true}
+              containerClassName="group overflow-hidden rounded-xl xl:h-[70vh] md:h-[50vh] h-96 relative mb-6"
+              className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+            />
             <div className="space-y-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-0">
@@ -143,6 +198,7 @@ const ShowCaseSection = () => {
                     href={featuredProject.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`View ${featuredProject.title} project`}
                     className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-semibold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:scale-105 hover:shadow-lg"
                   >
                     <span className="relative z-10">View Project</span>
@@ -153,6 +209,7 @@ const ShowCaseSection = () => {
                       strokeWidth={2}
                       stroke="currentColor"
                       className="size-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -167,6 +224,7 @@ const ShowCaseSection = () => {
                     href={featuredProject.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`View source code for ${featuredProject.title}`}
                     className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-black-200 text-white border border-white-50 font-semibold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:text-black hover:scale-105 hover:shadow-lg"
                   >
                     <span className="relative z-10">View Code</span>
@@ -177,6 +235,7 @@ const ShowCaseSection = () => {
                       strokeWidth={2}
                       stroke="currentColor"
                       className="size-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -194,26 +253,24 @@ const ShowCaseSection = () => {
         {/* Secondary Projects - 2 Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {secondaryProjects.slice(0, 2).map((project, index) => (
-            <div
+            <article
               key={project.id}
-              className="project-card"
+              className="project-card p-2"
               ref={(el) => (secondaryRef.current[index] = el)}
             >
-              <div
-                className={`${
+              <ProjectImage
+                src={project.imagePath}
+                alt={project.title}
+                priority={false}
+                containerClassName={`${
                   project.id === 3
                     ? "bg-[#FFEFDB]"
                     : project.id === 4
                     ? "bg-[#FFE7EB]"
                     : ""
                 } group overflow-hidden rounded-xl xl:h-[40vh] md:h-52 lg:h-72 h-64 relative mb-4 xl:px-5 2xl:px-12 py-0`}
-              >
-                <img
-                  src={project.imagePath}
-                  alt={project.title}
-                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              />
               <div>
                 <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-2">
                   {project.title}
@@ -245,6 +302,7 @@ const ShowCaseSection = () => {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`View ${project.title} live demo`}
                       className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:scale-105 hover:shadow-lg"
                     >
                       <span className="relative z-10">Live Demo</span>
@@ -255,6 +313,7 @@ const ShowCaseSection = () => {
                         strokeWidth={2}
                         stroke="currentColor"
                         className="size-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -269,6 +328,7 @@ const ShowCaseSection = () => {
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`View source code for ${project.title}`}
                       className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 bg-black-200 text-white border border-white-50 font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-white-50 hover:text-black hover:scale-105 hover:shadow-lg"
                     >
                       <span className="relative z-10">View Code</span>
@@ -279,6 +339,7 @@ const ShowCaseSection = () => {
                         strokeWidth={2}
                         stroke="currentColor"
                         className="size-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -290,7 +351,7 @@ const ShowCaseSection = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>
